@@ -72,53 +72,74 @@ function handleXOffsetChange(event: Event) {
     </div>
 
     <!-- Scale slider -->
-    <div v-if="enabledOptions.includes('scale')">
-        <label class="block text-sm text-gray-400 mb-1">Scale</label>
-        <input 
-          type="range"
-          min="0.5"
-          max="2"
-          step="0.1"
-          :value="scale"
-          @input="handleScaleChange($event)"
-          class="w-full"
-        >
-        <div class="text-xs text-gray-500 mt-1">
-          {{ scale?.toFixed(1) || 1 }}
+    <div v-if="enabledOptions.includes('scale')" class="mt-3">
+        <div class="flex items-center mb-1">
+            <span class="text-lg mr-2">🔍</span>
+            <label class="text-sm text-gray-400">Scale</label>
+        </div>
+        <div class="flex items-center">
+            <span class="text-xs text-gray-500 mr-2">Small</span>
+            <input 
+            type="range"
+            min="0.5"
+            max="2"
+            step="0.1"
+            :value="scale"
+            @input="handleScaleChange($event)"
+            class="w-full"
+            >
+            <span class="text-xs text-gray-500 ml-2">Large</span>
+        </div>
+        <div class="text-xs text-gray-500 mt-1 text-center">
+            {{ scale?.toFixed(1) || 1 }}
         </div>
     </div>
 
     <!-- x Offset Slider -->
-    <div v-if="enabledOptions.includes('xOffset')">
-        <label class="block text-sm text-gray-400 mb-1">x Offset</label>
-        <input 
-          type="range"
-          min="-10"
-          max="10"
-          step="1"
-          :value="xOffset"
-          @input="handleXOffsetChange($event)"
-          class="w-full"
-        >
-        <div class="text-xs text-gray-500 mt-1">
-          {{ xOffset?.toFixed(1) || 1 }}
+    <div v-if="enabledOptions.includes('xOffset')" class="mt-3">
+        <div class="flex items-center mb-1">
+            <span class="text-lg mr-2">↔️</span>
+            <label class="text-sm text-gray-400">Horizontal Position</label>
+        </div>
+        <div class="flex items-center">
+            <span class="text-xs text-gray-500 mr-2">Left</span>
+            <input 
+            type="range"
+            min="-10"
+            max="10"
+            step="1"
+            :value="xOffset"
+            @input="handleXOffsetChange($event)"
+            class="w-full"
+            >
+            <span class="text-xs text-gray-500 ml-2">Right</span>
+        </div>
+        <div class="text-xs text-gray-500 mt-1 text-center">
+            {{ xOffset?.toFixed(1) || 1 }}
         </div>
     </div>
 
     <!-- y Offset Slider -->
-    <div v-if="enabledOptions.includes('yOffset')">
-        <label class="block text-sm text-gray-400 mb-1">y Offset</label>
-        <input 
-          type="range"
-          min="-10"
-          max="10"
-          step="1"
-          :value="yOffset"
-          @input="handleYOffsetChange($event)"
-          class="w-full"
-        >
-        <div class="text-xs text-gray-500 mt-1">
-          {{ yOffset?.toFixed(1) || 1 }}
+    <div v-if="enabledOptions.includes('yOffset')" class="mt-3">
+        <div class="flex items-center mb-1">
+            <span class="text-lg mr-2">↕️</span>
+            <label class="text-sm text-gray-400">Vertical Position</label>
+        </div>
+        <div class="flex items-center">
+            <span class="text-xs text-gray-500 mr-2">Up</span>
+            <input 
+            type="range"
+            min="-10"
+            max="10"
+            step="1"
+            :value="yOffset"
+            @input="handleYOffsetChange($event)"
+            class="w-full"
+            >
+            <span class="text-xs text-gray-500 ml-2">Down</span>
+        </div>
+        <div class="text-xs text-gray-500 mt-1 text-center">
+            {{ yOffset?.toFixed(1) || 1 }}
         </div>
     </div>
 </template>
