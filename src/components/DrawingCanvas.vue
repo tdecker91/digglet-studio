@@ -4,7 +4,7 @@ import ColorSelector from './ColorSelector.vue';
 
 // Canvas references and state
 const drawingCanvas = ref(null);
-const ctx = ref(null);
+const ctx = ref(null as any);
 const isDrawing = ref(false);
 const showGrid = ref(true);
 const cursorX = ref(0);
@@ -13,8 +13,7 @@ const currentColor = ref('#000000');
 
 // Template data
 const pixelSize = ref(15); // Size of each "pixel" block
-const activePixels = ref([]); // Array of active pixel coordinates
-const templateName = ref('newFeature');
+const activePixels = ref([] as any); // Array of active pixel coordinates
 
 // Canvas dimensions
 const canvasWidth = ref(400);
@@ -26,7 +25,7 @@ const emit = defineEmits(['update:pixels', 'update:color']);
 
 // Initialize canvas on mount
 onMounted(() => {
-  const canvas = drawingCanvas.value;
+  const canvas: any = drawingCanvas.value;
   ctx.value = canvas.getContext('2d');
   
   // Set actual canvas dimensions
@@ -47,7 +46,7 @@ watch(currentColor, (newColor) => {
 });
 
 // Convert canvas coordinates to grid coordinates
-function canvasToGrid(x, y) {
+function canvasToGrid(x: number, y: number) {
   // Center of canvas is (0,0) in grid coordinates
   const centerX = canvasWidth.value / 2;
   const centerY = canvasHeight.value / 2;
@@ -60,7 +59,7 @@ function canvasToGrid(x, y) {
 }
 
 // Convert grid coordinates to canvas coordinates
-function gridToCanvas(gridX, gridY) {
+function gridToCanvas(gridX: number, gridY: number) {
   const centerX = canvasWidth.value / 2;
   const centerY = canvasHeight.value / 2;
   
@@ -71,7 +70,7 @@ function gridToCanvas(gridX, gridY) {
 }
 
 // Start drawing on mouse down
-function startDrawing(event) {
+function startDrawing(event: MouseEvent) {
   isDrawing.value = true;
   currentMouseButton.value = event.button;
   togglePixel(event, currentMouseButton.value);
@@ -83,7 +82,7 @@ function stopDrawing() {
 }
 
 // Draw while mouse is moving (if mouse button is down)
-function draw(event) {
+function draw(event: any) {
   // Update cursor position
   const rect = event.target.getBoundingClientRect();
   const x = event.clientX - rect.left;
@@ -97,7 +96,7 @@ function draw(event) {
 }
 
 // Toggle pixel state at the given position
-function togglePixel(event, button) {
+function togglePixel(event: any, button: any) {
   const rect = event.target.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
@@ -107,7 +106,7 @@ function togglePixel(event, button) {
   
   // Check if this pixel is already active
   const existingIndex = activePixels.value.findIndex(
-    p => p.x === gridPos.x && p.y === gridPos.y
+    (p: any) => p.x === gridPos.x && p.y === gridPos.y
   );
   
   if (existingIndex >= 0) {
@@ -139,7 +138,7 @@ function toggleGrid() {
 
 // Draw the canvas with all active pixels and grid
 function drawCanvas() {
-  const canvas = drawingCanvas.value;
+  const canvas: any = drawingCanvas.value;
   if (!canvas || !ctx.value) return;
   
   // Clear canvas
@@ -159,7 +158,7 @@ function drawCanvas() {
 
 // Draw the grid lines
 function drawGrid() {
-  const canvas = drawingCanvas.value;
+  const canvas: any = drawingCanvas.value;
   ctx.value.strokeStyle = '#ddd';
   ctx.value.lineWidth = 1;
   
@@ -188,7 +187,7 @@ function drawGrid() {
 function drawActivePixels() {
   ctx.value.fillStyle = currentColor.value;
   
-  activePixels.value.forEach(pixel => {
+  activePixels.value.forEach((pixel: any) => {
     const { x, y } = gridToCanvas(pixel.x, pixel.y);
     ctx.value.fillRect(
       x, 
@@ -216,7 +215,7 @@ function drawOrigin() {
 // Generate template code for export
 const templateCode = computed(() => {
   // Convert to array of tuples format
-    return `[${activePixels.value.map(p => `[${p.x}, ${p.y}]`).join(',')}]`;
+    return `[${activePixels.value.map((p: any) => `[${p.x}, ${p.y}]`).join(',')}]`;
 });
 
 // Export the template (copy to clipboard)
@@ -233,7 +232,7 @@ function exportTemplate() {
 
 // Prevent context menu on right-click
 onMounted(() => {
-  drawingCanvas.value.addEventListener('contextmenu', e => e.preventDefault());
+  (drawingCanvas as any).value.addEventListener('contextmenu', (e: any) => e.preventDefault());
 });
 </script>
 

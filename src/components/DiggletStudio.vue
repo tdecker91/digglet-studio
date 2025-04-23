@@ -5,7 +5,7 @@ import FeatureSelectionTabs from './FeatureSelectionTabs.vue';
 import FeatureCustomizer from './FeatureCustomizer.vue';
 import FeatureOptions from './FeatureOptions.vue';
 import { Digglet, FeatureType } from '../models/digglet';
-import DrawingCanvas from './DrawingCanvas.vue';
+// import DrawingCanvas from './DrawingCanvas.vue';
 import type { Pixel } from '../avatarCanvas/features';
 
 const digglet = ref(new Digglet());
@@ -47,13 +47,13 @@ function resetAvatar() {
 }
 
 // Update pixels from drawing canvas
-function updateCanvasPixels(pixels: { x: number, y: number }[]) {
-    canvasPixels.value = pixels.map((p) => ([p.x, p.y]));
-}
+// function updateCanvasPixels(pixels: { x: number, y: number }[]) {
+//     canvasPixels.value = pixels.map((p) => ([p.x, p.y]));
+// }
 
-function updateCanvasColor(color: string) {
-    canvasColor.value = color;
-}
+// function updateCanvasColor(color: string) {
+//     canvasColor.value = color;
+// }
 
 </script>
 

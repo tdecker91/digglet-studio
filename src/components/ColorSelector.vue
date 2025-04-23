@@ -69,7 +69,7 @@
   });
   
   // Select a color and emit the change
-  function selectColor(color) {
+  function selectColor(color: string) {
     currentColor.value = color;
     customColor.value = color;
     emit('update:modelValue', color);

@@ -11,7 +11,7 @@ const features = [
 
 const model = defineModel();
 
-function selectFeature(feature) {
+function selectFeature(feature: string) {
     model.value = feature;
 }
 

@@ -65,7 +65,7 @@ function handleXOffsetChange(event: Event) {
         <label class="block text-sm text-gray-400 mb-1">Color</label>
         <input 
             type="color"
-            :value="color || '#000000'" 
+            :value="props.color || '#000000'" 
             @input="handleColorChange($event)"
             class="w-full h-8 rounded cursor-pointer"
         />
