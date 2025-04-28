@@ -130,27 +130,3 @@ input[type="color"] {
   border-radius: 8px;
   overflow: hidden;
 }
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #ffffff;
-    --card-bg: #f5f5ff;
-    --text: #213547;
-    --text-muted: #4a5568;
-    --border: rgba(0, 0, 0, 0.1);
-    color: var(--text);
-    background-color: var(--background);
-  }
-  
-  body {
-    background: linear-gradient(145deg, #f5f5ff, var(--background));
-  }
-  
-  a:hover {
-    color: #747bff;
-  }
-  
-  button {
-    background-color: #f0f0f0;
-  }
-}
