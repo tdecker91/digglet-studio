@@ -46,6 +46,81 @@ function resetAvatar() {
     digglet.value = new Digglet();
 }
 
+// Color preset functionality
+const colorPresets = {
+    pink: {
+        background: '#de74d0',
+        body: '#f5c9ee',
+        eyes: '#de74d0',
+        mouth: '#de74d0',
+        hair: '#e8a8dc'
+    },
+    blue: {
+        background: '#6a6ef1',
+        body: '#c9cafa',
+        eyes: '#6a6ef1',
+        mouth: '#6a6ef1',
+        hair: '#9fa1f0'
+    },
+    light_blue: {
+        background: '#46d0d5',
+        body: '#baeeef',
+        eyes: '#46d0d5',
+        mouth: '#46d0d5',
+        hair: '#9ddce0'
+    },
+    yellow: {
+        background: '#e2c254',
+        body: '#f4e9c0',
+        eyes: '#e2c254',
+        mouth: '#e2c254',
+        hair: '#e7d28a'
+    },
+    green: {
+        background: '#3dcd8e',
+        body: '#b7edd5',
+        eyes: '#3dcd8e',
+        mouth: '#3dcd8e',
+        hair: '#8ed7a8'
+    },
+    purple: {
+        background: '#b16dee',
+        body: '#e2c9f9',
+        eyes: '#b16dee',
+        mouth: '#b16dee',
+        hair: '#c79bf4'
+    },
+    black: {
+        background: '#1F2937',
+        body: '#6B7280',
+        eyes: '#1F2937',
+        mouth: '#1F2937',
+        hair: '#4B5563'
+    }
+};
+
+function applyColorPreset(presetName: keyof typeof colorPresets) {
+    const preset = colorPresets[presetName];
+    
+    // Apply colors to all features
+    digglet.value.background.color = preset.background;
+    digglet.value.body.color = preset.body;
+    digglet.value.eyes.color = preset.eyes;
+    digglet.value.mouth.color = preset.mouth;
+    digglet.value.hair.color = preset.hair;
+}
+
+function clearColors() {
+    // Reset colors to default values from Digglet constructor
+    digglet.value.background.color = '#000000';  // black
+    digglet.value.body.color = '#FFFFFF';        // white
+    digglet.value.eyes.color = '#000000';        // black
+    digglet.value.mouth.color = '#000000';       // black
+    digglet.value.hair.color = '#805E00';        // brown
+    
+    console.log('Colors reset to defaults');
+}
+
 // Update pixels from drawing canvas
 // function updateCanvasPixels(pixels: { x: number, y: number }[]) {
 //     canvasPixels.value = pixels.map((p) => ([p.x, p.y]));
@@ -80,6 +155,30 @@ function resetAvatar() {
 
             <!-- Right Side - Customization Options - Fixed width -->
             <div class="bg-gray-700 rounded-md shadow-lg p-4 w-full md:w-[350px] shrink-0">
+                <!-- Color Presets Section -->
+                <div class="mb-6">
+                    <h3 class="text-white text-lg font-medium mb-3">Color Presets</h3>
+                    <div class="grid grid-cols-5 gap-2 mb-3">
+                        <button 
+                            v-for="(preset, name) in colorPresets" 
+                            :key="name"
+                            @click="applyColorPreset(name as keyof typeof colorPresets)"
+                            :style="{ backgroundColor: preset.background }"
+                            class="w-12 h-12 rounded-md border-2 border-gray-600 hover:border-white transition-colors duration-200 flex items-center justify-center text-white text-xs font-medium capitalize shadow-lg hover:shadow-xl"
+                            :title="`Apply ${name} preset`"
+                        >
+                            {{ name.charAt(0).toUpperCase() }}
+                        </button>
+                    </div>
+                    <button 
+                        @click="clearColors"
+                        class="w-full py-2 px-3 bg-gray-600 hover:bg-gray-500 text-white text-sm font-medium rounded-md border-2 border-gray-500 hover:border-gray-400 transition-colors duration-200"
+                        title="Reset colors to defaults"
+                    >
+                        Clear Colors
+                    </button>
+                </div>
+                
                 <FeatureOptions :feature="currentFeature" :digglet="digglet" />
             </div>
             <!-- <DrawingCanvas @update:pixels="updateCanvasPixels" @update:color="updateCanvasColor" /> -->
