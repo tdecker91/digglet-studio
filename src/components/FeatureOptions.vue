@@ -75,6 +75,11 @@ const availableTypes = computed(() => {
 function selectFeature(typeId) {
     currentType.value = typeId;
     switch(props.feature) {
+        case "body":
+            props.digglet.body.id = typeId;
+            // Apply presets based on body type
+            applyBodyPresets(typeId);
+            break;
         case "eyes":
             props.digglet.eyes.id = typeId;
             break;
@@ -88,6 +93,28 @@ function selectFeature(typeId) {
             break;
     }
     emit('update:feature', { type: props.feature, value: typeId });
+}
+
+// Apply feature presets when body type changes
+function applyBodyPresets(bodyType) {
+    switch(bodyType) {
+        case BodyTypes.SKULL:
+            // Skull preset: closed mouth, square eyes
+            props.digglet.mouth.id = MouthTypes.CLOSED;
+            props.digglet.eyes.id = EyeTypes.SQUARE;
+            console.log('Applied skull preset: closed mouth, square eyes');
+            break;
+        case BodyTypes.GLITCH:
+            // Glitch preset: no mouth, no eyes
+            props.digglet.mouth.id = MouthTypes.NONE;
+            props.digglet.eyes.id = EyeTypes.NONE;
+            console.log('Applied glitch preset: no mouth, no eyes');
+            break;
+        // Add more presets as needed
+        default:
+            // No preset for other body types
+            break;
+    }
 }
 </script>
 

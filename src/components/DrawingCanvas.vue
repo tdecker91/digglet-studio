@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, defineEmits } from 'vue';
+import { ref, computed, onMounted, watch, defineEmits, defineProps } from 'vue';
 import ColorSelector from './ColorSelector.vue';
+
+// Props
+const props = defineProps<{
+  pixels?: [number, number, string?][]
+}>();
 
 // Canvas references and state
 const drawingCanvas = ref(null);
@@ -10,10 +15,11 @@ const showGrid = ref(true);
 const cursorX = ref(0);
 const cursorY = ref(0);
 const currentColor = ref('#000000');
+const includeColor = ref(true); // Whether to include color in pixels
 
 // Template data
 const pixelSize = ref(15); // Size of each "pixel" block
-const activePixels = ref([] as any); // Array of active pixel coordinates
+const activePixels = ref<[number, number, string?][]>(props.pixels || []); // Array of pixel tuples [x, y, color?]
 
 // Canvas dimensions
 const canvasWidth = ref(400);
@@ -40,6 +46,13 @@ onMounted(() => {
 watch(activePixels, () => {
   drawCanvas();
 });
+
+// Watch for changes to props.pixels and update activePixels
+watch(() => props.pixels, (newPixels) => {
+  if (newPixels) {
+    activePixels.value = [...newPixels];
+  }
+}, { deep: true });
 
 watch(currentColor, (newColor) => {
   emit('update:color', newColor);
@@ -106,7 +119,7 @@ function togglePixel(event: any, button: any) {
   
   // Check if this pixel is already active
   const existingIndex = activePixels.value.findIndex(
-    (p: any) => p.x === gridPos.x && p.y === gridPos.y
+    (p: [number, number, string?]) => p[0] === gridPos.x && p[1] === gridPos.y
   );
   
   if (existingIndex >= 0) {
@@ -118,7 +131,9 @@ function togglePixel(event: any, button: any) {
   } else {
     // If not active, add it (if left mouse button and not holding shift)
     if (button === 0 && !event.shiftKey) {
-      activePixels.value.push({ x: gridPos.x, y: gridPos.y });
+      // Include color only if checkbox is checked
+      const pixelColor = includeColor.value ? currentColor.value : undefined;
+      activePixels.value.push([gridPos.x, gridPos.y, pixelColor]);
       drawCanvas();
     }
   }
@@ -185,13 +200,16 @@ function drawGrid() {
 
 // Draw all active pixels
 function drawActivePixels() {
-  ctx.value.fillStyle = currentColor.value;
-  
-  activePixels.value.forEach((pixel: any) => {
-    const { x, y } = gridToCanvas(pixel.x, pixel.y);
+  activePixels.value.forEach((pixel: [number, number, string?]) => {
+    const [x, y, color] = pixel;
+    const canvasPos = gridToCanvas(x, y);
+    
+    // Use pixel's individual color or fall back to current color
+    ctx.value.fillStyle = color || currentColor.value;
+    
     ctx.value.fillRect(
-      x, 
-      y, 
+      canvasPos.x, 
+      canvasPos.y, 
       pixelSize.value, 
       pixelSize.value
     );
@@ -215,7 +233,14 @@ function drawOrigin() {
 // Generate template code for export
 const templateCode = computed(() => {
   // Convert to array of tuples format
-    return `[${activePixels.value.map((p: any) => `[${p.x}, ${p.y}]`).join(',')}]`;
+  return `[${activePixels.value.map((p: [number, number, string?]) => {
+    const [x, y, color] = p;
+    if (color) {
+      return `[${x}, ${y}, "${color}"]`;
+    } else {
+      return `[${x}, ${y}]`;
+    }
+  }).join(', ')}]`;
 });
 
 // Export the template (copy to clipboard)
@@ -260,6 +285,10 @@ onMounted(() => {
         <button @click="clearCanvas">Clear</button>
         <button @click="toggleGrid">{{ showGrid ? 'Hide' : 'Show' }} Grid</button>
         <button @click="exportTemplate">Export Template</button>
+        <label class="checkbox-control" style="background: #fff; padding: 0 8px; border-radius: 4px; border: 1px solid #ddd;">
+          <input type="checkbox" v-model="includeColor" />
+          <span style="color: #222; font-weight: 500;">Include Color</span>
+        </label>
       </div>
       
       <!-- Template preview - now below other elements -->
@@ -327,6 +356,20 @@ button {
 
 button:hover {
   background-color: #2980b9;
+}
+
+.checkbox-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  height: 32px; /* Match button height */
+}
+
+.checkbox-control input[type="checkbox"] {
+  cursor: pointer;
 }
 
 .template-preview-container {

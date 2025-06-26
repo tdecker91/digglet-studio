@@ -1,5 +1,5 @@
 import { FeatureType, type FeatureConfig } from "../models/digglet";
-import { bodyTemplate } from "./body";
+import { bodyTemplateFactory } from "./body";
 import { eyeTemplateFactory } from "./eyes";
 import { hairTemplateFactory } from "./hair";
 import { mouthTemplateFactory } from "./mouths";
@@ -19,6 +19,12 @@ export interface RenderableFeature {
     position: Position; // coordinate in global space where the feature is on the canvas
     color: string;
     pixels: Pixel[]; // pixels in local space of what the feature looks like
+    bgColor?: string;
+}
+
+const emptyTemplate: FeatureTemplate = {
+    center: [0,0],
+    pixels: []
 }
 
 export function positionsToRenderableFeature(positions: Position[], color: string): RenderableFeature {
@@ -36,12 +42,24 @@ export function renderFeatureFromConfig(config: FeatureConfig, ctx: CanvasRender
         templates = [templates];
     }
 
-    (templates as FeatureTemplate[]).forEach((template) => {
-        let renderableFeature: RenderableFeature = featureTemplateToRenderableFeature(
-            template, config.xOffset, config.yOffset, config.color);
+    // Special handling for eyes to apply spacing
+    if (config.type === FeatureType.EYES && config.eyeSpacing !== undefined) {
+        (templates as FeatureTemplate[]).forEach((template, index) => {
+            // Apply eye spacing - move left eye left and right eye right
+            const spacingOffset = index === 0 ? -(config.eyeSpacing || 0) : (config.eyeSpacing || 0);
+            let renderableFeature: RenderableFeature = featureTemplateToRenderableFeature(
+                template, config.xOffset + spacingOffset, config.yOffset, config.color, config.bgColor);
 
-        renderFeature(ctx, renderableFeature, config.scale)
-    })
+            renderFeature(ctx, renderableFeature, config.scale)
+        });
+    } else {
+        (templates as FeatureTemplate[]).forEach((template) => {
+            let renderableFeature: RenderableFeature = featureTemplateToRenderableFeature(
+                template, config.xOffset, config.yOffset, config.color, config.bgColor);
+
+            renderFeature(ctx, renderableFeature, config.scale)
+        });
+    }
 }
 
 export function renderFeature(ctx: CanvasRenderingContext2D, feature: RenderableFeature, scale: number = 1) {
@@ -57,25 +75,34 @@ export function renderFeature(ctx: CanvasRenderingContext2D, feature: Renderable
     for(let i = 0; i < feature.pixels.length; i++) {
         let x = feature.pixels[i][0];
         let y = feature.pixels[i][1];
-        ctx.fillStyle = feature.pixels[i][2] || feature.color || '#000000';
+        let color = feature.pixels[i][2] || feature.color || '#000000';
+        if (color === 'bg') {
+            color = feature.bgColor || '#000000';
+        }
+        ctx.fillStyle = color;
         ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
     }
 
     ctx.restore();
 }
 
-export function featureTemplateToRenderableFeature(template: FeatureTemplate, xOffset: number, yOffset: number, color: string): RenderableFeature {
+export function featureTemplateToRenderableFeature(template: FeatureTemplate, xOffset: number, yOffset: number, color: string, bgColor?: string): RenderableFeature {
     return {
         position: [template.center[0] + (xOffset * 25), template.center[1] + (yOffset * 25)],
         pixels: template.pixels,
-        color: color
+        color: color,
+        bgColor: bgColor
     }
 }
 
-export function featureTemplateFactory(type: FeatureType, id: string): FeatureTemplate  | FeatureTemplate[] {
+export function featureTemplateFactory(type: FeatureType, id: string): FeatureTemplate | FeatureTemplate[] {
+    if (id == 'none') {
+        return emptyTemplate;
+    }
+
     switch(type) {
         case FeatureType.BODY:
-            return bodyTemplate;
+            return bodyTemplateFactory(id);
         case FeatureType.HAIR:
             return hairTemplateFactory(id);
         case FeatureType.EYES:
@@ -83,6 +110,6 @@ export function featureTemplateFactory(type: FeatureType, id: string): FeatureTe
         case FeatureType.MOUTH:
             return mouthTemplateFactory(id);
         default:
-            return {} as FeatureTemplate;
+            return emptyTemplate;
     }
 }

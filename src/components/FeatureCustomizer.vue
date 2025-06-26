@@ -17,12 +17,12 @@
     const emit = defineEmits(['valueUpdated']);
 
     const featureConfigs: Record<FeatureType, { options: string[] }> = {
-    [FeatureType.BACKGROUND]: { options: ['color'] },
-    [FeatureType.BODY]: { options: ['color'] },
-    [FeatureType.EYES]: { options: ['color', 'scale', 'xOffset', 'yOffset'] },
-    [FeatureType.MOUTH]: { options: ['color', 'scale', 'xOffset', 'yOffset'] },
-    [FeatureType.HAIR]: { options: ['color', 'scale', 'xOffset', 'yOffset'] }
-};
+        [FeatureType.BACKGROUND]: { options: ['color'] },
+        [FeatureType.BODY]: { options: ['color'] },
+        [FeatureType.EYES]: { options: ['color', 'scale', 'xOffset', 'yOffset', 'eyeSpacing'] },
+        [FeatureType.MOUTH]: { options: ['color', 'scale', 'xOffset', 'yOffset'] },
+        [FeatureType.HAIR]: { options: ['color', 'scale', 'xOffset', 'yOffset'] }
+    };
 
     const currentFeatureProps = computed(() => {
         const feature = props.feature;

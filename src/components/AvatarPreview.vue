@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, defineProps, watch, computed } from 'vue';
-import { positionsToRenderableFeature, renderFeature, renderFeatureFromConfig, type Position } from '../avatarCanvas/features';
+import { positionsToRenderableFeature, renderFeature, renderFeatureFromConfig, type Position, type Pixel } from '../avatarCanvas/features';
 import type { FeatureConfig } from '../models/digglet';
 
 const avatarCanvas = ref<HTMLCanvasElement | undefined>(undefined);
@@ -57,13 +57,33 @@ function drawAvatar(canvas?: HTMLCanvasElement) {
     ctx.fillRect(0, 0, props.width, props.height);
 
     // Digglet selected features
+    var bgColor = props.digglet.background.color;
     props.digglet.features().forEach((feature: FeatureConfig) => {
+        feature.bgColor = bgColor;
         renderFeatureFromConfig(feature, ctx);
     })
 
     // custom pixels from drawing canvas
-    let customFeature = positionsToRenderableFeature(props.canvasPixels as Position[], props.canvasColor)
-    renderFeature(canvas.getContext("2d")!, customFeature);
+    if (props.canvasPixels && props.canvasPixels.length > 0) {
+        // Group pixels by color for efficient rendering
+        const pixelsByColor = new Map<string, Position[]>();
+        
+        (props.canvasPixels as Pixel[]).forEach((pixel) => {
+            const [x, y, color] = pixel;
+            const pixelColor = color || props.canvasColor;
+            
+            if (!pixelsByColor.has(pixelColor)) {
+                pixelsByColor.set(pixelColor, []);
+            }
+            pixelsByColor.get(pixelColor)!.push([x, y]);
+        });
+        
+        // Render each color group
+        pixelsByColor.forEach((positions, color) => {
+            let customFeature = positionsToRenderableFeature(positions, color);
+            renderFeature(canvas.getContext("2d")!, customFeature);
+        });
+    }
 }
 </script>
 

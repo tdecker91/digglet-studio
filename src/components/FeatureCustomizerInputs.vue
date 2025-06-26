@@ -18,6 +18,10 @@
             type: Number,
             required: false
         },
+        eyeSpacing: {
+            type: Number,
+            required: false
+        },
         enabledOptions: {
             type: Array,
             default: ['scale', 'color', 'xOffset', 'yOffset']
@@ -53,6 +57,14 @@ function handleXOffsetChange(event: Event) {
     let newValue = parseFloat((event.target as HTMLInputElement).value);
     emit('valueUpdated', {
         type: 'xOffset',
+        value: newValue
+    })
+}
+
+function handleEyeSpacingChange(event: Event) {
+    let newValue = parseFloat((event.target as HTMLInputElement).value);
+    emit('valueUpdated', {
+        type: 'eyeSpacing',
         value: newValue
     })
 }
@@ -140,6 +152,30 @@ function handleXOffsetChange(event: Event) {
         </div>
         <div class="text-xs text-gray-500 mt-1 text-center">
             {{ yOffset?.toFixed(1) || 1 }}
+        </div>
+    </div>
+
+    <!-- Eye Spacing Slider (only for eyes) -->
+    <div v-if="enabledOptions.includes('eyeSpacing')" class="mt-3">
+        <div class="flex items-center mb-1">
+            <span class="text-lg mr-2">👀</span>
+            <label class="text-sm text-gray-400">Eye Spacing</label>
+        </div>
+        <div class="flex items-center">
+            <span class="text-xs text-gray-500 mr-2">Closer</span>
+            <input 
+            type="range"
+            min="-5"
+            max="5"
+            step="1"
+            :value="eyeSpacing || 0"
+            @input="handleEyeSpacingChange($event)"
+            class="w-full"
+            >
+            <span class="text-xs text-gray-500 ml-2">Further</span>
+        </div>
+        <div class="text-xs text-gray-500 mt-1 text-center">
+            {{ eyeSpacing?.toFixed(1) || '0.0' }}
         </div>
     </div>
 </template>

@@ -23,6 +23,8 @@ export interface FeatureConfig {
     scale: number;
     xOffset: number;
     yOffset: number;
+    bgColor?: string;
+    eyeSpacing?: number; // specifically for eyes - controls spacing between left and right eye
 }
 
 export class Digglet {
@@ -56,7 +58,8 @@ export class Digglet {
             color: '#000000',
             scale: 1,
             yOffset: 0,
-            xOffset: 0
+            xOffset: 0,
+            eyeSpacing: 0 // default spacing, 0 means normal distance
         };
         this.mouth = {
             type: FeatureType.MOUTH,
