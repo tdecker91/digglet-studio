@@ -88,7 +88,7 @@ function drawAvatar(canvas?: HTMLCanvasElement) {
 </script>
 
 <template>
-    <div class="w-64 h-64 bg-gray-200 overflow-hidden relative">
+    <div class="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-gray-200 overflow-hidden relative max-w-full mx-auto">
         <!-- Avatar will be rendered here -->
         <div class="absolute inset-0 flex items-center justify-center text-gray-400">
             <canvas id="avatarCanvas" ref="avatarCanvas" :width="width" :height="height"></canvas>
@@ -98,7 +98,23 @@ function drawAvatar(canvas?: HTMLCanvasElement) {
 
 <style scoped>
 canvas {
-    width: v-bind(previewSize + 'px');
-    height: v-bind(previewSize + 'px');
+    width: 160px;
+    height: 160px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+@media (min-width: 640px) {
+    canvas {
+        width: 192px;
+        height: 192px;
+    }
+}
+
+@media (min-width: 768px) {
+    canvas {
+        width: v-bind(previewSize + 'px');
+        height: v-bind(previewSize + 'px');
+    }
 }
 </style>

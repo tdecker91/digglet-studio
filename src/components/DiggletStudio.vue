@@ -4,6 +4,7 @@ import AvatarPreview from './AvatarPreview.vue';
 import FeatureSelectionTabs from './FeatureSelectionTabs.vue';
 import FeatureCustomizer from './FeatureCustomizer.vue';
 import FeatureOptions from './FeatureOptions.vue';
+import CompactFeatureSelector from './CompactFeatureSelector.vue';
 import { Digglet, FeatureType } from '../models/digglet';
 // import DrawingCanvas from './DrawingCanvas.vue';
 import type { Pixel } from '../avatarCanvas/features';
@@ -133,38 +134,72 @@ function clearColors() {
 </script>
 
 <template>
-    <div id="app" class="container mx-auto p-4 max-w-6xl">
-        <header class="mb-6">
-            <h1 class="text-3xl font-bold text-center text-indigo-600">digglet studio</h1>
+    <div class="w-full max-w-6xl mx-auto min-w-0 overflow-x-hidden p-0 sm:p-4">
+        <header class="mb-2 sm:mb-4 md:mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-center text-indigo-600 px-2 sm:px-0">digglet studio</h1>
         </header>
 
-        <div class="flex flex-col md:flex-row gap-6">
+        <div class="flex flex-col lg:flex-row gap-2 sm:gap-4 lg:gap-6">
             <!-- Left Side - Avatar Preview and Controls -->
-            <div class="flex-1 flex flex-col gap-4 md:max-w-[calc(100%-370px)]">
-                <div class="bg-gray-700 p-8 rounded-md shadow-lg flex items-center justify-center">
+            <div class="w-full lg:flex-1 flex flex-col gap-2 sm:gap-3 lg:gap-4">
+                <!-- Feature Selection moved to top on mobile -->
+                <div class="sticky top-2 z-10 lg:static lg:z-auto">
+                    <FeatureSelectionTabs v-model="currentFeature" />
+                </div>
+                
+                <!-- Feature Options - Compact on mobile, full on desktop -->
+                <div class="lg:hidden">
+                    <CompactFeatureSelector :feature="currentFeature" :digglet="digglet" />
+                </div>
+                
+                <div class="bg-gray-700 p-1 sm:p-4 md:p-8 rounded-md shadow-lg flex items-center justify-center min-h-[168px] sm:min-h-[200px] md:min-h-[288px]">
                     <AvatarPreview :digglet="digglet" :canvasPixels="canvasPixels" :canvasColor="canvasColor" />
                 </div>
 
-                <FeatureSelectionTabs v-model="currentFeature" />
-
                 <!-- Controls for positioning/scaling -->
-                <div class="customizer bg-gray-700 p-4 rounded-md shadow-lg">
+                <div class="customizer bg-gray-700 p-2 sm:p-3 lg:p-4 rounded-md shadow-lg">
                     <FeatureCustomizer :feature="currentFeature" :digglet="digglet" />
+                </div>
+                
+                <!-- Mobile Color Presets -->
+                <div class="lg:hidden bg-gray-700 rounded-md shadow-lg p-2 sm:p-3">
+                    <div class="mb-3 sm:mb-4">
+                        <h3 class="text-white text-base font-medium mb-2">Color Presets</h3>
+                        <div class="grid grid-cols-4 gap-2 mb-3">
+                            <button 
+                                v-for="(preset, name) in colorPresets" 
+                                :key="name"
+                                @click="applyColorPreset(name as keyof typeof colorPresets)"
+                                :style="{ backgroundColor: preset.background }"
+                                class="w-10 h-10 rounded-md border-2 border-gray-600 hover:border-white transition-colors duration-200 flex items-center justify-center text-white text-xs font-medium capitalize shadow-lg hover:shadow-xl"
+                                :title="`Apply ${name} preset`"
+                            >
+                                {{ name.charAt(0).toUpperCase() }}
+                            </button>
+                        </div>
+                        <button 
+                            @click="clearColors"
+                            class="w-full py-2 px-3 bg-gray-600 hover:bg-gray-500 text-white text-sm font-medium rounded-md border-2 border-gray-500 hover:border-gray-400 transition-colors duration-200"
+                            title="Reset colors to defaults"
+                        >
+                            Clear Colors
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Side - Customization Options - Fixed width -->
-            <div class="bg-gray-700 rounded-md shadow-lg p-4 w-full md:w-[350px] shrink-0">
+            <!-- Right Side - Customization Options (Desktop only) -->
+            <div class="hidden lg:block bg-gray-700 rounded-md shadow-lg p-3 sm:p-4 w-full lg:w-auto lg:min-w-[280px] lg:max-w-[320px] lg:shrink-0">
                 <!-- Color Presets Section -->
-                <div class="mb-6">
-                    <h3 class="text-white text-lg font-medium mb-3">Color Presets</h3>
+                <div class="mb-4 sm:mb-6">
+                    <h3 class="text-white text-base sm:text-lg font-medium mb-2 sm:mb-3">Color Presets</h3>
                     <div class="grid grid-cols-5 gap-2 mb-3">
                         <button 
                             v-for="(preset, name) in colorPresets" 
                             :key="name"
                             @click="applyColorPreset(name as keyof typeof colorPresets)"
                             :style="{ backgroundColor: preset.background }"
-                            class="w-12 h-12 rounded-md border-2 border-gray-600 hover:border-white transition-colors duration-200 flex items-center justify-center text-white text-xs font-medium capitalize shadow-lg hover:shadow-xl"
+                            class="w-10 h-10 rounded-md border-2 border-gray-600 hover:border-white transition-colors duration-200 flex items-center justify-center text-white text-xs font-medium capitalize shadow-lg hover:shadow-xl"
                             :title="`Apply ${name} preset`"
                         >
                             {{ name.charAt(0).toUpperCase() }}
@@ -185,11 +220,11 @@ function clearColors() {
         </div>
 
         <!-- Footer with Save/Reset buttons -->
-        <div class="mt-6 flex justify-center gap-4">
-            <button @click="saveAvatar" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium">
+        <div class="mt-2 sm:mt-4 lg:mt-6 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 lg:gap-4 px-2 sm:px-0">
+            <button @click="saveAvatar" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium mx-2 sm:mx-0">
                 Save Avatar
             </button>
-            <button @click="resetAvatar" class="px-6 py-2 bg-gray-200 text-white rounded-md hover:bg-gray-300 font-medium">
+            <button @click="resetAvatar" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 font-medium mx-2 sm:mx-0">
                 Reset
             </button>
         </div>

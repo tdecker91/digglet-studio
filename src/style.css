@@ -36,10 +36,12 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  justify-content: center;
+  align-items: flex-start;
   min-width: 320px;
   min-height: 100vh;
   background: linear-gradient(145deg, #1a1a2e, var(--background));
+  overflow-x: hidden;
 }
 
 h1 {
@@ -129,4 +131,35 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="color"] {
   border-radius: 8px;
   overflow: hidden;
+}
+
+/* Ensure the app container prevents horizontal overflow */
+#app {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Prevent any potential layout issues on mobile */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure proper centering on all screen sizes */
+body {
+  justify-content: center;
+  align-items: flex-start;
+}
+
+@media (max-width: 640px) {
+  body {
+    justify-content: stretch;
+    align-items: stretch;
+  }
+  
+  #app {
+    min-height: 100vh;
+    width: 100vw;
+  }
 }
