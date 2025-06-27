@@ -6,6 +6,9 @@ import FeatureCustomizer from './FeatureCustomizer.vue';
 import FeatureOptions from './FeatureOptions.vue';
 import CompactFeatureSelector from './CompactFeatureSelector.vue';
 import { Digglet, FeatureType } from '../models/digglet';
+import { EyeTypes } from '../avatarCanvas/eyes';
+import { MouthTypes } from '../avatarCanvas/mouths';
+import { HairTypes } from '../avatarCanvas/hair';
 // import DrawingCanvas from './DrawingCanvas.vue';
 import type { Pixel } from '../avatarCanvas/features';
 
@@ -122,6 +125,32 @@ function clearColors() {
     console.log('Colors reset to defaults');
 }
 
+// Randomize button functionality
+function randomizeDigglet() {
+    // Get available options from the imported types (excluding body)
+    const eyeOptions = Object.values(EyeTypes) as string[];
+    const mouthOptions = Object.values(MouthTypes) as string[];
+    const hairOptions = Object.values(HairTypes) as string[];
+    
+    // Get available color presets
+    const presetNames = Object.keys(colorPresets) as (keyof typeof colorPresets)[];
+    const randomPreset = presetNames[Math.floor(Math.random() * presetNames.length)];
+    
+    // Apply random color preset
+    applyColorPreset(randomPreset);
+    
+    // Random eyes (keep existing body)
+    digglet.value.eyes.id = eyeOptions[Math.floor(Math.random() * eyeOptions.length)];
+    
+    // Random mouth
+    digglet.value.mouth.id = mouthOptions[Math.floor(Math.random() * mouthOptions.length)];
+    
+    // Random hair
+    digglet.value.hair.id = hairOptions[Math.floor(Math.random() * hairOptions.length)];
+    
+    console.log(`🎲 Digglet randomized with ${randomPreset} color preset!`);
+}
+
 // Update pixels from drawing canvas
 // function updateCanvasPixels(pixels: { x: number, y: number }[]) {
 //     canvasPixels.value = pixels.map((p) => ([p.x, p.y]));
@@ -219,10 +248,13 @@ function clearColors() {
             <!-- <DrawingCanvas @update:pixels="updateCanvasPixels" @update:color="updateCanvasColor" /> -->
         </div>
 
-        <!-- Footer with Save/Reset buttons -->
+        <!-- Footer with Save/Reset/Randomize buttons -->
         <div class="mt-2 sm:mt-4 lg:mt-6 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 lg:gap-4 px-2 sm:px-0">
             <button @click="saveAvatar" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium mx-2 sm:mx-0">
                 Save Avatar
+            </button>
+            <button @click="randomizeDigglet" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium mx-2 sm:mx-0">
+                🎲 Randomize
             </button>
             <button @click="resetAvatar" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 font-medium mx-2 sm:mx-0">
                 Reset

@@ -21,8 +21,6 @@ const emit = defineEmits(['update:feature']);
 
 const currentType = ref(props.digglet[props.feature].id);
 
-console.log(currentType.value)
-
 watch(
   () => props.digglet[props.feature].id,
   (newValue) => {
